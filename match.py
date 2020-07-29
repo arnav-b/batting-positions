@@ -9,6 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+pd.options.mode.chained_assignment = None
+
 class Match(object):
     
     def __init__(self, url):
@@ -25,11 +27,11 @@ class Match(object):
     #         raise IndexError('Innings does not exist')
     
     def get_batting_df(self, innings):
-        df = pd.read_html(self.r.content, attrs = {'class':'table batsman'})
+        return self.bat_dfs[innings - 1]
         
     
     def get_bowling_df(self, innings):
-        return pd.read_html(self.r.content, attrs = {'class':'table bowler'})[innings - 1]
+        return self.bowl_dfs[innings - 1]
     
     ## This function doesn't work
     # def get_batting_team(self, innings):
@@ -47,16 +49,34 @@ class Match(object):
         
         
 url_win = 'https://www.espncricinfo.com/ci/engine/match/1152839.html'
-url_inns_win = 'https://stats.espncricinfo.com/ci/engine/match/1187008.html'
+
 url_draw = 'https://stats.espncricinfo.com/ci/engine/match/1187672.html'
+url_win2 = 'https://stats.espncricinfo.com/ci/engine/match/1152846.html'
 
 match_win = Match(url_win)
-match_inns_win = Match(url_inns_win)
+match_win2 = Match(url_win2)
+
 match_draw = Match(url_draw)
 
 dfs = pd.read_html(match_draw.r.content, attrs = {'class':'table batsman'})
-df1 = dfs[0]
+
 df2 = dfs[2]
+
+url_inns_win = 'https://stats.espncricinfo.com/ci/engine/match/1187007.html'
+match_inns_win = Match(url_inns_win)
+
+df1 = match_inns_win.bat_dfs[0]
+print(df1)
+df1.dropna(how='all', inplace=True)
+print(df1)
+df1.drop(df1.tail(3).index, inplace=True)
+print(df1)
+df1.index = range(1, len(df1) + 1)
+print(df1)
+df1.astype({'R':'int32', 'B':'int32', 'M':'int32', '4s':'int32', '6s': 'int32',
+            'SR':'float64'}).dtypes
+print(df1)
+
 
 # print(len(match_inns_win.batting_tables))
 # batting_table = match_inns_win.get_batting_table(1)
