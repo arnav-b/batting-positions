@@ -42,22 +42,14 @@ class Match(object):
         if 'M' in df.columns:
             df.drop(columns=['SR', 'Unnamed: 8', 'Unnamed: 9'], inplace=True)
             df.columns = ['Batsman', 'Dismissal', 'R', 'B','M', '4s', '6s']
-            try:
-                df.astype({'R':'int32', 'B':'int32', '4s':'int32', '6s': 'int32', 
-                           'M':'int32'}, copy=False)
-            except:
-                pass
         else:
             df.drop(columns=['SR', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9'], 
                     inplace=True)
             df.columns = ['Batsman', 'Dismissal', 'R', 'B', '4s', '6s']
             df['M'] = [np.nan] * len(df)
-            try:
-                df.astype({'R':'int32', 'B':'int32', '4s':'int32', 
-                        '6s': 'int32'}, copy=False)
-            except:
-                pass
-        
+
+        df[['R', 'B', 'M', '4s', '6s']] = df[['R', 'B', 'M', '4s', '6s']]\
+                .apply(pd.to_numeric, errors='ignore')       
         return df
         
     def get_bowling_df(self, innings):
@@ -127,15 +119,3 @@ class Match(object):
         dates = df.loc[df[0] == 'Match days'][1]
         dates = split('    |\(', str(dates))[1]
         return dates
-
-# match = Match('https://www.espncricinfo.com/series/19430/scorecard/1187008/india-vs-south-africa-2nd-test-icc-world-test-championship-2019-2021')
-# # # df = match.bat_dfs[1]
-# # # fow = df['BATSMEN'].iloc[-1]
-# # # fow = split(':|\(|-', fow)
-# # # date = str(match.get_dates())
-# # # date = split('    |\(', date)
-# # print(match.get_dates())
-# # list1 = [np.nan] * 5
-# # print(list1)
-# df = match.get_batting_df(1)
-# # print(df.loc[4, 'M'])
