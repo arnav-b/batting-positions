@@ -20,16 +20,24 @@ df4 = pd.read_csv('df4.csv')
 df3.drop('Unnamed: 0', axis=1, inplace=True)
 df4.drop('Unnamed: 0', axis=1, inplace=True)
 
-# Stats on fall of previous wicket
+
+
+# Overall distribution of fall of wickets 
 
 fig, ax = plt.subplots()
-sns.kdeplot(df3.FoWR, ax=ax)
-sns.kdeplot(df4.FoWR, ax=ax)
-plt.legend()
+ax.set_title('Fall of Wicket Distribution (Runs)')
+sns.kdeplot(df3.FoWR, ax=ax, label='First Wicket')
+sns.kdeplot(df4.FoWR, ax=ax, label='Second Wicket')
 
 fig, ax = plt.subplots()
-sns.kdeplot(df3.FoWO, ax=ax)
-sns.kdeplot(df4.FoWO, ax=ax)
+ax.set_title('Fall of Wicket Distribution (Overs)')
+sns.kdeplot(df3.FoWO, ax=ax, label='First Wicket')
+sns.kdeplot(df4.FoWO, ax=ax, label='Second Wicket')
+
+# fig, ax = plt.subplots()
+# ax.set_title('Fall of Wicket Distribution (Minutes)')
+# sns.kdeplot(df3.FoWM, ax=ax, label='First Wicket')
+# sns.kdeplot(df4.FoWM, ax=ax, label='Second Wicket')
 
 def get_fow_runs(df, innings='all'):
     if innings != 'all':
@@ -43,6 +51,9 @@ def get_fow_overs(df, innings='all'):
     avg = np.sum(df.FowO) / len(df)
     return avg
 
+# Some scatterplots
+
+# sns.jointplot(x=df3.FoWR, y=df3.Total, kind='scatter')
 
 # Averages by innings
 
