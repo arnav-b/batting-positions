@@ -41,15 +41,7 @@ for url in urls:
 # Get data on No. 3s and 4s
 ###############################################################################
 
-# url1 = 'https://www.espncricinfo.com/series/19430/scorecard/1187008/india-vs-south-africa-2nd-test-icc-world-test-championship-2019-2021'
-# url2 = 'https://www.espncricinfo.com/series/19297/scorecard/1187672/new-zealand-vs-england-2nd-test-england-in-new-zealand-2019-20'
-# url3 = 'https://www.espncricinfo.com/series/19497/scorecard/1225247/england-vs-west-indies-1st-test-west-indies-in-england-2020'
-
-# matches = [Match(url1), Match(url2), Match(url3)]
-
 data = []
-# data3 = []
-# data4 = []
 
 for match in matches:
     print('Current match:', match)
@@ -80,7 +72,6 @@ for match in matches:
                         batdf.loc[3, 'B'], batdf.loc[3, 'M'], notOut, fowR, 
                         fowO, fowM]
             
-            # data3.append(innsData3)
         
             if len(batdf) >= 4:
                 fow = re.split(':|\),', match.get_fow(innings))[2]
@@ -93,15 +84,14 @@ for match in matches:
                     fowM = max(m1, m2)
                 else:
                     fowM = fowM + m3            
-                notOut = 1 if batdf.loc[3, 'Dismissal'] == 'not out'\
-                    or batdf.loc[3, 'Dismissal'] == 'retired hurt' else 0
+                notOut = 1 if batdf.loc[4, 'Dismissal'] == 'not out'\
+                    or batdf.loc[4, 'Dismissal'] == 'retired hurt' else 0
                 
                 innsData4 = [batdf.loc[4, 'Batsman'], batdf.loc[4, 'R'], 
                             batdf.loc[4, 'B'], batdf.loc[4, 'M'], notOut, fowR, 
                             fowO, fowM, match.get_total(innings)]
             else:
-                innsData4 = [np.nan] * 8
-                # data4.append(innsData4)
+                innsData4 = [np.nan] * 9
         
             innsData = innsData3 + innsData4
             data.append(innsData)
@@ -110,8 +100,6 @@ cols = ['Dates', 'Season', 'MatchNo', 'Venue', 'Innings', '3Batsman', '3R', '3B'
         '3M', '3NotOut', 'FoWR1', 'FoWO1', 'FoWM1', '4Batsman', '4R', '4B', 
         '4M', '4NotOut', 'FoWR2', 'FoWO2', 'FoWM2', 'Total']
 
-# df3 = pd.DataFrame(data3, columns=cols)
-# df4 = pd.DataFrame(data4, columns=cols)
 df = pd.DataFrame(data, columns=cols)
 
 df[['MatchNo', 'Innings', '3R', '3B', '3M', '3NotOut', 'FoWR1', 'FoWO1',  
@@ -119,5 +107,3 @@ df[['MatchNo', 'Innings', '3R', '3B', '3M', '3NotOut', 'FoWR1', 'FoWO1',
     .apply(pd.to_numeric, errors='coerce')
 
 df.to_csv('df.csv', index=False)
-# df3.to_csv('df3.csv', index=False)
-# df4.to_csv('df4.csv', index=False)
