@@ -10,7 +10,6 @@ import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import seaborn as sns
-from math import floor
 
 # Get data
 
@@ -20,19 +19,13 @@ df = pd.read_csv('df.csv')
 
 fig, ax = plt.subplots()
 ax.set_title('Fall of Wicket Distribution (Runs)')
-sns.kdeplot(df.FoWR1, ax=ax, label='First Wicket')
-sns.kdeplot(df.FoWR2, ax=ax, label='Second Wicket')
+sns.distplot(df.FoWR1, ax=ax, label='First Wicket')
+sns.distplot(df.FoWR2, ax=ax, label='Second Wicket')
 
 fig, ax = plt.subplots()
 ax.set_title('Fall of Wicket Distribution (Overs)')
-sns.kdeplot(df.FoWO1, ax=ax, label='First Wicket')
-sns.kdeplot(df.FoWO2, ax=ax, label='Second Wicket')
-
-fig, ax = plt.subplots()
-ax.set_title('Partnership for First vs Second Wicket')
-ax.set_xlabel('Opening Partnership (R)')
-ax.set_ylabel('Second Wicket Parternship (R)')
-sns.jointplot(x=df.FoWR1, y=df.FoWR2 - df.FoWR1, kind='scatter')
+sns.distplot(df.FoWO1, ax=ax, label='First Wicket')
+sns.distplot(df.FoWO2, ax=ax, label='Second Wicket')
 
 def get_fow_runs(df, innings='all'):
     if innings != 'all':
@@ -49,23 +42,20 @@ def get_fow_overs(df, innings='all'):
 # Some scatterplots
 
 fig, ax = plt.subplots()
-ax.set_title('Second Wicket vs Opening Partnership')
-sns.scatterplot(x='FoWR1', y=df.apply(lambda x: x['FoWR2'] - x['FoWR1'], axis=1), 
-                hue='Innings', ax=ax, data=df)
-ax.set_xlabel('Opening Partnership')
-ax.set_ylabel('Second Wicket Partnership')
+sns.scatterplot(df.FoWR1, df.FoWR2 - df.FoWR1, hue=df.Innings)
+plt.title('Second Wicket vs Opening Partnership')
+plt.xlabel('Opening Partnership')
+plt.ylabel('Second Wicket Partnership')
 
-fig, ax = plt.subplots()
-ax.set_title('No 3 Score vs Opening Partnership')
-sns.scatterplot(x='FoWR1', y='3R', hue='Innings', ax=ax, data=df)
-ax.set_xlabel('Fall of First Wicket (R)')
-ax.set_ylabel('No 3 Score')
+sns.scatterplot(df.FoWR1, df['3R'], hue=df.Innings)
+plt.title('No 3 Score vs Opening Partnership')
+plt.xlabel('Fall of First Wicket (R)')
+plt.ylabel('No 3 Score')
 
-fig, ax = plt.subplots()
-ax.set_title('No 4 Score vs Fall of Second Wicket')
-sns.scatterplot(x='FoWR2', y='4R', hue='Innings', ax=ax, data=df)
-ax.set_xlabel('Fall of Second Wicket (R)')
-ax.set_ylabel('No 4 Score')
+sns.scatterplot(df.FoWR2, df['4R'], hue=df.Innings)
+plt.title('No 4 Score vs Fall of Second Wicket')
+plt.xlabel('Fall of Second Wicket (R)')
+plt.ylabel('No 4 Score')
 
 # Analysis for Smith 
 
@@ -73,16 +63,69 @@ dfSmith = df[(df['3Batsman'].str.contains('SPD Smith')) |\
              (df['4Batsman'].str.contains('SPD Smith'))]
     
 dfSmith['SmithPosition'] = dfSmith['3Batsman'].apply(lambda x: 3 if 'SPD Smith' in x else 4)
-    
-sns.catplot(x=dfSmith.SmithPosition.apply(lambda x: 'SPD Smith' if x == 3 else 'Others'),
-            y='3R', hue='Innings', kind='box', data=dfSmith)   
+
+# Comparing Smith to other Australian 3s and 4s
+sns.catplot(x='SmithPosition', y='3R', hue='Innings', kind='box', data=dfSmith)   
 plt.title('Smith vs Others at No 3')
-    
-# Averages by innings
 
-def get_average(df, innings):
-    df = df[df.Innings == innings]
-    avg = np.sum(df.R) / np.sum(df.NotOut == 0)
-    return avg
-    
+sns.catplot(x='SmithPosition', y='4R', hue='Innings', kind='box', data=dfSmith)   
+plt.title('Smith vs Others at No 4')
 
+# Comparing Australia totals with Smith at 3 and 4
+sns.catplot(x='SmithPosition', y='Total', hue='Innings', kind='box', data=dfSmith)
+plt.title('Australian Totals with Smith at 3 and 4')
+
+# Two-factor ANOVA for Smith's position and innings
+sns.pointplot(x=dfSmith.Innings, y=dfSmith.Total, hue=dfSmith.SmithPosition)
+plt.title('Interaction Plot for Australia Totals by Innings')
+
+lmSmith = sm.formula.ols('Total ~ Innings + SmithPosition', data=dfSmith).fit()
+aovSmith = sm.stats.anova_lm(lmSmith, typ=2)
+
+res = lmSmith.resid
+fig = sm.qqplot(res)
+plt.title('QQ Plot of Residuals for Smith ANOVA Model')
+
+# When does Smith come in?
+
+fig, ax = plt.subplots()
+ax.set(xlim=(0, 400))
+sns.distplot(df[df['3Batsman'].str.contains('SPD Smith')].FoWR1, ax=ax, 
+             label = 'At 3')
+sns.distplot(df[df['4Batsman'].str.contains('SPD Smith', na=False)].FoWR2, ax=ax,
+             label = 'At 4')
+plt.title('When Smith Comes in')
+plt.xlabel('Fall of Wicket')
+
+# Analysis for Root
+
+dfRoot = df[(df['3Batsman'].str.contains('JE Root')) |\
+             (df['4Batsman'].str.contains('JE Root'))]
+dfRoot['RootPosition'] = dfRoot['3Batsman'].apply(lambda x: 3 if 'JE Root' in x else 4)
+
+# Comparing Root to other English 3s and 4s
+
+sns.catplot(x='RootPosition', y='3R', hue='Innings', kind='box', data=dfRoot)   
+plt.title('Root vs Others at No 3')
+
+sns.catplot(x='RootPosition', y='4R', hue='Innings', kind='box', data=dfRoot)   
+plt.title('Root vs Others at No 4')
+
+# Comparing England totals with Smith at 3 and 4
+sns.catplot(x='RootPosition', y='Total', hue='Innings', kind='box', data=dfRoot)
+plt.title('English Totals with Root at 3 and 4')
+
+# Interaction plot for Root's position and innings
+sns.pointplot(x='Innings', y='Total', hue='RootPosition', data=dfRoot)
+plt.title('Interaction Plot for England Totals by Innings')
+
+# Where does Root come in?
+
+fig, ax = plt.subplots()
+ax.set(xlim=(0, 200))
+sns.distplot(df[df['3Batsman'].str.contains('JE Root')].FoWR1, ax=ax, 
+             label = 'At 3')
+sns.distplot(df[df['4Batsman'].str.contains('JE Root', na=False)].FoWR2, ax=ax,
+             label = 'At 4')
+plt.title('When Root Comes in')
+plt.xlabel('Fall of Wicket')
