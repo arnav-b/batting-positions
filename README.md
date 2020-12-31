@@ -4,8 +4,16 @@ Ian Chappell [claims](https://www.espncricinfo.com/story/why-are-steven-smith-an
 
 ## England and Root
 
-At first glance, England's average totals don't change much whether Root bats at 3 or 4. An interaction plot confirms the intuition; the 95% confidence intervals for England's expected score overlap for every innings, suggesting no significant difference.
+At first glance, England's average totals don't change much whether Root bats at 3 or 4. 
+[England Totals Boxplot](./eng_totals_boxplot.png)
+
+An interaction plot confirms the intuition; the 95% confidence intervals for England's expected score overlap for every innings, suggesting no significant difference.
+[England Totals Interaction Plot](./eng_totals_interaction.png)
 
 ## Australia and Smith
 
-Australia's scores vary slightly more, but seem to be better with Smith at 4. In any case, the two-way ANOVA in `analysis.py` finds no significant correlation between Smith'sposition and Australia's score. 
+Australia's scores vary slightly more, but still not as much as Chappell might expect. 
+[Australia Totals Boxplot](./aus_totals_boxplot.png)
+
+In any case, the two-way ANOVA in `analysis.py` finds no significant correlation between Smith'sposition and Australia's score. 
+[Australia Totals Interaction Plot](./aus_totals_interaction.png)
