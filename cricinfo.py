@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 17 19:30:59 2020
-
-@author: arnav
-"""    
-
 import numpy as np
 import pandas as pd
 from match import Match
@@ -18,10 +11,10 @@ from bs4 import BeautifulSoup
 urls = []
 for n in range(1,10):
     page = 'https://stats.espncricinfo.com/ci/engine/stats/index.html?class=1;page={0};spanmin1=1+Jan+2010;spanval1=span;template=results;type=aggregate;view=match'.format(n)
-    
+
     r = requests.get(page)
     soup = BeautifulSoup(r.content, 'lxml')
-    
+
     text = soup('a', text = re.compile(r'Match scorecard'))
     for t in text:
         urls.append('https://stats.espncricinfo.com' + t.get('href'))

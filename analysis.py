@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Aug  2 22:56:43 2020
-
-@author: arnav
-"""
-
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -52,16 +45,16 @@ plt.show()
 
 dfSmith = df[(df['3Batsman'].str.contains('SPD Smith')) |\
              (df['4Batsman'].str.contains('SPD Smith'))]
-    
+
 dfSmith['SmithPosition'] = dfSmith['3Batsman'].apply(lambda x: 3 if 'SPD Smith' in x else 4)
 
 # Comparing Smith to other Australian 3s and 4s
-sns.catplot(x='SmithPosition', y='3R', hue='Innings', kind='box', data=dfSmith)   
+sns.catplot(x='SmithPosition', y='3R', hue='Innings', kind='box', data=dfSmith)
 plt.xlabel('Smith Position')
 plt.ylabel('Runs by the No 3')
 plt.title('Smith vs Others at No 3')
 
-sns.catplot(x='SmithPosition', y='4R', hue='Innings', kind='box', data=dfSmith)   
+sns.catplot(x='SmithPosition', y='4R', hue='Innings', kind='box', data=dfSmith)
 plt.xlabel('Smith Position')
 plt.ylabel('Runs by the No 4')
 plt.title('Smith vs Others at No 4')
@@ -87,7 +80,7 @@ plt.title('QQ Plot of Residuals for Smith ANOVA Model')
 
 fig, ax = plt.subplots()
 ax.set(xlim=(0, 400))
-sns.distplot(df[df['3Batsman'].str.contains('SPD Smith')].FoWR1, ax=ax, 
+sns.distplot(df[df['3Batsman'].str.contains('SPD Smith')].FoWR1, ax=ax,
              label = 'At 3')
 sns.distplot(df[df['4Batsman'].str.contains('SPD Smith', na=False)].FoWR2, ax=ax,
              label = 'At 4')
@@ -104,12 +97,12 @@ dfRoot['RootPosition'] = dfRoot['3Batsman'].apply(lambda x: 3 if 'JE Root' in x 
 
 sns.catplot(x='RootPosition', y='3R', hue='Innings', kind='box', data=dfRoot)
 plt.xlabel('Root Position')
-plt.ylabel('Runs by the No 3') 
+plt.ylabel('Runs by the No 3')
 plt.title('Root vs Others at No 3')
 
-sns.catplot(x='RootPosition', y='4R', hue='Innings', kind='box', data=dfRoot) 
+sns.catplot(x='RootPosition', y='4R', hue='Innings', kind='box', data=dfRoot)
 plt.xlabel('Root Position')
-plt.ylabel('Runs by the No 4')   
+plt.ylabel('Runs by the No 4')
 plt.title('Root vs Others at No 4')
 
 # Confidence intervals for Root at 3 and 4
@@ -136,7 +129,7 @@ plt.show()
 
 fig, ax = plt.subplots()
 ax.set(xlim=(0, 200))
-sns.distplot(df[df['3Batsman'].str.contains('JE Root')].FoWR1, ax=ax, 
+sns.distplot(df[df['3Batsman'].str.contains('JE Root')].FoWR1, ax=ax,
              label = 'At 3')
 sns.distplot(df[df['4Batsman'].str.contains('JE Root', na=False)].FoWR2, ax=ax,
              label = 'At 4')
